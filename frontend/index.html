@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Financial Clarity - Expense & Tag Tracker</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💳</text></svg>">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet" />
+
+  <!-- Material Symbols Outlined -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#4648d4",
+            "primary-container": "#6063ee",
+            "primary-fixed": "#e1e0ff",
+            "on-primary": "#ffffff",
+            "on-primary-container": "#fffbff",
+            "secondary": "#855300",
+            "secondary-container": "#fea619",
+            "secondary-fixed": "#ffddb8",
+            "background": "#f8f9ff",
+            "on-background": "#0b1c30",
+            "surface": "#f8f9ff",
+            "on-surface": "#0b1c30",
+            "on-surface-variant": "#464554",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#eff4ff",
+            "surface-container": "#e5eeff",
+            "surface-container-high": "#dce9ff",
+            "surface-container-highest": "#d3e4fe",
+            "surface-bright": "#f8f9ff",
+            "outline": "#767586",
+            "outline-variant": "#c7c4d7",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "success": "#00C9A7"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "3xl": "1.5rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-background dark:bg-[#0D0D0F] text-on-surface dark:text-[#E8E8E8] min-h-screen pb-24 md:pb-12 transition-colors duration-200">
+
+  <!-- Top Sticky Header -->
+  <header class="sticky top-0 z-50 bg-surface/90 dark:bg-[#0D0D0F]/90 backdrop-blur-md border-b border-surface-container dark:border-white/10 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+      
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-primary/10 text-primary dark:text-[#667EEA] flex items-center justify-center font-black text-lg shadow-sm border border-primary/20">
+          FC
+        </div>
+        <div>
+          <h1 class="font-extrabold text-lg text-primary dark:text-[#667EEA] leading-tight tracking-tight">Financial Clarity</h1>
+          <p class="text-[11px] font-medium text-on-surface-variant dark:text-gray-400">Expense & Tag Manager</p>
+        </div>
+      </div>
+
+      <!-- Desktop Tab Navigation Bar (Integrated in Header) -->
+      <nav class="hidden md:flex items-center gap-1.5 bg-surface-container-low dark:bg-[#1A1A2E] p-1.5 rounded-full border border-surface-container dark:border-white/10 shadow-xs">
+        <button class="nav-tab active flex items-center gap-2 px-5 py-2 rounded-full font-semibold text-xs transition-all" data-tab="dashboard">
+          <span class="material-symbols-outlined text-base">home</span>
+          Dashboard
+        </button>
+        <button class="nav-tab flex items-center gap-2 px-5 py-2 rounded-full font-semibold text-xs transition-all text-on-surface-variant dark:text-gray-400" data-tab="history">
+          <span class="material-symbols-outlined text-base">history</span>
+          History
+        </button>
+        <button class="nav-tab flex items-center gap-2 px-5 py-2 rounded-full font-semibold text-xs transition-all text-on-surface-variant dark:text-gray-400" data-tab="tags">
+          <span class="material-symbols-outlined text-base">label</span>
+          Tags
+        </button>
+        <button class="nav-tab flex items-center gap-2 px-5 py-2 rounded-full font-semibold text-xs transition-all text-on-surface-variant dark:text-gray-400" data-tab="rules">
+          <span class="material-symbols-outlined text-base">rule</span>
+          Auto-Tag Rules
+        </button>
+      </nav>
+      
+      <div class="flex items-center gap-2">
+        <!-- Quick Add Expense (Desktop header) -->
+        <button onclick="document.getElementById('fab-add-tx')?.click()" class="hidden sm:flex items-center gap-1.5 bg-primary text-white text-xs font-bold px-4 py-2 rounded-full shadow-sm hover:bg-primary-container active-scale transition-all">
+          <span class="material-symbols-outlined text-base">add</span>
+          Add Expense
+        </button>
+
+        <!-- Clear Data Button -->
+        <button id="btn-seed" title="Clear All Data" class="p-2 text-on-surface-variant dark:text-gray-300 hover:bg-surface-container-low dark:hover:bg-white/10 rounded-full active-scale">
+          <span class="material-symbols-outlined text-xl">delete_sweep</span>
+        </button>
+
+        <!-- Theme Toggle Button -->
+        <button id="btn-theme-toggle" title="Toggle Light/Dark Theme" class="p-2 text-on-surface-variant dark:text-gray-300 hover:bg-surface-container-low dark:hover:bg-white/10 rounded-full active-scale">
+          <span class="material-symbols-outlined text-xl" id="theme-icon">dark_mode</span>
+        </button>
+
+        <!-- Wallet Info -->
+        <button id="btn-info" class="p-2 text-primary dark:text-[#667EEA] hover:bg-surface-container-low dark:hover:bg-white/10 rounded-full active-scale">
+          <span class="material-symbols-outlined text-xl">account_balance_wallet</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Content Container (Laptop Optimized max-w-7xl) -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 mt-6 space-y-6">
+
+    <!-- ================= DASHBOARD VIEW ================= -->
+    <div id="view-dashboard" class="tab-view space-y-6">
+      
+      <!-- Month & Time Range Selector + Untagged Banner -->
+      <section class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <select id="select-month" class="appearance-none bg-surface-container-lowest dark:bg-[#1A1A2E] text-on-surface dark:text-white font-bold text-sm pl-4 pr-9 py-2.5 rounded-full border border-surface-container dark:border-white/10 cursor-pointer focus:outline-none shadow-xs">
+              <option value="current">This Month</option>
+              <option value="all">All Time</option>
+            </select>
+            <span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+          </div>
+
+          <div class="flex gap-1 bg-surface-container-low dark:bg-[#1A1A2E] p-1 rounded-full border border-surface-container dark:border-white/10">
+            <button class="range-btn text-xs font-semibold px-3.5 py-1.5 rounded-full text-on-surface-variant dark:text-gray-400 transition-all" data-range="week">Week</button>
+            <button class="range-btn active text-xs font-semibold px-3.5 py-1.5 rounded-full bg-primary text-white shadow-sm transition-all" data-range="month">Month</button>
+            <button class="range-btn text-xs font-semibold px-3.5 py-1.5 rounded-full text-on-surface-variant dark:text-gray-400 transition-all" data-range="year">Year</button>
+          </div>
+        </div>
+
+        <!-- Untagged Alert Banner -->
+        <div id="untagged-banner" class="hidden bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2.5 rounded-2xl flex items-center gap-3 shadow-sm">
+          <span class="material-symbols-outlined text-white text-lg">label_off</span>
+          <p id="untagged-banner-text" class="text-xs font-medium text-white">You have expenses without categories.</p>
+          <button id="btn-review-untagged" class="ml-auto bg-white text-amber-700 font-bold text-xs px-3 py-1 rounded-xl active-scale hover:bg-amber-50 transition-colors">
+            Review
+          </button>
+        </div>
+      </section>
+
+      <!-- Bento Summary Cards Grid (4 columns on laptop) -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Total Spent -->
+        <div class="bg-surface-container-lowest dark:bg-[#1A1A2E] p-5 rounded-3xl border border-surface-container dark:border-white/10 shadow-xs relative overflow-hidden flex flex-col justify-between">
+          <div class="flex justify-between items-start mb-3">
+            <span class="material-symbols-outlined text-primary dark:text-[#667EEA] p-2.5 bg-primary-fixed dark:bg-[#667EEA]/20 rounded-2xl">account_balance_wallet</span>
+            <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full">Spent</span>
+          </div>
+          <div>
+            <p class="text-xs text-on-surface-variant dark:text-gray-400 font-medium">Total Spent</p>
+            <h2 id="dash-total-spent" class="text-2xl lg:text-3xl font-extrabold text-on-surface dark:text-white mt-1">₹0.00</h2>
+          </div>
+        </div>
+
+        <!-- Top Expense -->
+        <div class="bg-surface-container-lowest dark:bg-[#1A1A2E] p-5 rounded-3xl border border-surface-container dark:border-white/10 shadow-xs relative overflow-hidden flex flex-col justify-between">
+          <div class="flex justify-between items-start mb-3">
+            <span class="material-symbols-outlined text-secondary dark:text-[#F39C12] p-2.5 bg-secondary-fixed dark:bg-[#F39C12]/20 rounded-2xl">trending_up</span>
+            <span id="dash-top-pct" class="text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-2.5 py-1 rounded-full">Top</span>
+          </div>
+          <div>
+            <p class="text-xs text-on-surface-variant dark:text-gray-400 font-medium">Highest Single Expense</p>
+            <h2 id="dash-top-name" class="text-lg lg:text-xl font-bold text-on-surface dark:text-white mt-1 truncate">None</h2>
+            <p id="dash-top-amount" class="text-xs font-semibold text-on-surface-variant dark:text-gray-400">₹0.00</p>
+          </div>
+        </div>
+
+        <!-- Quick Insights Card 1 -->
+        <div class="bg-surface-container-lowest dark:bg-[#1A1A2E] p-5 rounded-3xl border border-surface-container dark:border-white/10 shadow-xs relative overflow-hidden flex flex-col justify-between">
+          <div class="flex justify-between items-start mb-3">
+            <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 p-2.5 bg-emerald-500/10 rounded-2xl">category</span>
+            <span class="text-xs font-semibold text-primary dark:text-[#667EEA] bg-primary/10 px-2.5 py-1 rounded-full">Organized</span>
+          </div>
+          <div>
+            <p class="text-xs text-on-surface-variant dark:text-gray-400 font-medium">Smart Categorization</p>
+            <h2 class="text-lg font-bold text-on-surface dark:text-white mt-1">Auto-Tag Rules</h2>
+            <p class="text-xs text-on-surface-variant dark:text-gray-400">Match merchants to categories instantly</p>
+          </div>
+        </div>
+
+        <!-- Quick Insights Card 2 -->
+        <div class="bg-surface-container-lowest dark:bg-[#1A1A2E] p-5 rounded-3xl border border-surface-container dark:border-white/10 shadow-xs relative overflow-hidden flex flex-col justify-between">
+          <div class="flex justify-between items-start mb-3">
+            <span class="material-symbols-outlined text-purple-600 dark:text-purple-400 p-2.5 bg-purple-500/10 rounded-2xl">insights</span>
+            <span class="text-xs font-semibold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-full">Analytics</span>
+          </div>
+          <div>
+            <p class="text-xs text-on-surface-variant dark:text-gray-400 font-medium">Financial Health</p>
+            <h2 class="text-lg font-bold text-on-surface dark:text-white mt-1">Real-time Stats</h2>
+            <p class="text-xs text-on-surface-variant dark:text-gray-400">Track habits across custom date ranges</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Laptop 2-Column Dashboard Grid -->
+      <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Column: Spending Breakdown & Donut (lg:col-span-6) -->
+        <div class="lg:col-span-6 bg-surface-container-lowest dark:bg-[#1A1A2E] rounded-3xl p-6 shadow-xs border border-surface-container dark:border-white/10 space-y-6 flex flex-col justify-between">
+          <div>
+            <h3 class="font-bold text-base text-on-surface dark:text-white flex items-center justify-between">
+              Spending Breakdown
+              <span class="text-xs font-normal text-on-surface-variant dark:text-gray-400">Hover for details</span>
+            </h3>
+
+            <div class="flex flex-col items-center justify-center py-6 relative">
+              <!-- SVG Donut Chart -->
+              <div class="chart-container flex items-center justify-center">
+                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100" id="donut-svg">
+                  <circle class="stroke-surface-container dark:stroke-white/10" cx="50" cy="50" r="42" fill="none" stroke-width="14"></circle>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+                  <span id="center-label" class="text-xs text-on-surface-variant dark:text-gray-400 font-medium transition-all duration-300">Total Budget</span>
+                  <span id="center-value" class="text-xl font-extrabold text-on-surface dark:text-white leading-tight transition-all duration-300">₹0.00</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category Legend Grid -->
+          <div id="dash-category-grid" class="grid grid-cols-2 gap-3 pt-2">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Right Column: Daily Trend & Recent Operations (lg:col-span-6) -->
+        <div class="lg:col-span-6 space-y-6">
+          
+          <!-- Daily Trend Bar Chart Section -->
+          <div class="bg-surface-container-lowest dark:bg-[#1A1A2E] rounded-3xl p-6 shadow-xs border border-surface-container dark:border-white/10 space-y-4">
+            <div class="flex justify-between items-center">
+              <div>
+                <h3 class="font-bold text-base text-on-surface dark:text-white">Daily Trend</h3>
+                <p class="text-xs text-on-surface-variant dark:text-gray-400">Last 7 days spending behavior</p>
+              </div>
+              <span class="material-symbols-outlined text-outline">query_stats</span>
+            </div>
+
+            <!-- Bar Container -->
+            <div id="trend-bars-container" class="flex items-end justify-between h-36 gap-2 pt-4">
+              <!-- Dynamically populated -->
+            </div>
+
+            <!-- Day Labels -->
+            <div id="trend-labels-container" class="flex justify-between px-1 text-[10px] font-bold text-outline uppercase">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Recent Operations Section -->
+          <div class="bg-surface-container-lowest dark:bg-[#1A1A2E] rounded-3xl p-6 shadow-xs border border-surface-container dark:border-white/10 space-y-4">
+            <div class="flex justify-between items-center">
+              <h3 class="font-bold text-base text-on-surface dark:text-white">Recent Operations</h3>
+              <button id="btn-view-all-tx" class="text-xs font-bold text-primary dark:text-[#667EEA] hover:underline">View All</button>
+            </div>
+
+            <div id="dash-recent-list" class="space-y-2.5">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+
+    <!-- ================= HISTORY VIEW ================= -->
+    <div id="view-history" class="tab-view hidden space-y-5">
+      
+      <!-- Search & Filters -->
+      <section class="bg-surface-container-lowest dark:bg-[#1A1A2E] p-4 sm:p-6 rounded-3xl border border-surface-container dark:border-white/10 space-y-4 shadow-xs">
+        <div class="flex flex-col sm:flex-row gap-4 justify-between items-center">
+          <!-- Search input -->
+          <div class="relative w-full sm:w-80">
+            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline">search</span>
+            <input type="text" id="input-search-tx" placeholder="Search merchant, note, tag..." class="w-full bg-surface-container-low dark:bg-[#16213E] text-on-surface dark:text-white pl-10 pr-4 py-2.5 rounded-2xl border border-surface-container dark:border-white/10 text-sm focus:outline-none focus:border-primary shadow-xs" />
+          </div>
+
+          <!-- Credit / Debit Type Toggle -->
+          <div class="flex gap-1 bg-surface-container-low dark:bg-[#16213E] p-1 rounded-2xl border border-surface-container dark:border-white/10 shrink-0">
+            <button class="tx-type-filter-btn active text-xs font-semibold px-3 py-1 rounded-xl bg-primary text-white shadow-xs transition-all" data-type="ALL">All</button>
+            <button class="tx-type-filter-btn text-xs font-semibold px-3 py-1 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-all" data-type="DEBIT">💸 Debits</button>
+            <button class="tx-type-filter-btn text-xs font-semibold px-3 py-1 rounded-xl text-emerald-500 hover:bg-emerald-500/10 transition-all" data-type="CREDIT">💰 Credits</button>
+          </div>
+
+          <!-- Filter pills -->
+          <div id="history-filter-pills" class="flex overflow-x-auto gap-2 scroll-hide w-full sm:w-auto pb-1 sm:pb-0">
+            <button class="filter-pill active whitespace-nowrap px-4 py-1.5 rounded-full bg-primary text-white text-xs font-semibold shadow-xs transition-all" data-filter="all">All</button>
+            <button class="filter-pill whitespace-nowrap px-4 py-1.5 rounded-full bg-surface-container-low dark:bg-[#16213E] text-on-surface-variant dark:text-gray-300 text-xs font-semibold border border-surface-container dark:border-white/10 hover:bg-surface-container transition-all" data-filter="untagged">Untagged</button>
+            <!-- Additional category pills added dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Transactions List Grouped by Date -->
+      <section id="history-list-container" class="space-y-6">
+        <!-- Dynamically populated -->
+      </section>
+    </div>
+
+
+    <!-- ================= TAGS VIEW ================= -->
+    <div id="view-tags" class="tab-view hidden space-y-6">
+      
+      <div class="flex justify-between items-center bg-surface-container-lowest dark:bg-[#1A1A2E] p-6 rounded-3xl border border-surface-container dark:border-white/10 shadow-xs">
+        <div>
+          <h2 class="font-bold text-xl text-on-surface dark:text-white">Tag Manager</h2>
+          <p class="text-xs text-on-surface-variant dark:text-gray-400 mt-0.5">Organize your expenses with custom tags & color palettes</p>
+        </div>
+        <button id="btn-open-add-tag" class="bg-primary text-white px-5 py-2.5 rounded-2xl font-bold text-xs flex items-center gap-1.5 shadow-md active-scale">
+          <span class="material-symbols-outlined text-base">add</span>
+          Add Tag
+        </button>
+      </div>
+
+      <!-- Tag Grid List (Laptop 4 columns) -->
+      <section id="tags-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <!-- Dynamically populated -->
+      </section>
+    </div>
+
+
+    <!-- ================= RULES VIEW ================= -->
+    <div id="view-rules" class="tab-view hidden space-y-6">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface-container-lowest dark:bg-[#1A1A2E] p-6 rounded-3xl border border-surface-container dark:border-white/10 shadow-xs">
+        <div>
+          <h2 class="font-bold text-xl text-on-surface dark:text-white">Auto-Tag Rules</h2>
+          <p class="text-xs text-on-surface-variant dark:text-gray-400 mt-0.5">Auto-assign tags based on merchant keywords in transaction descriptions</p>
+        </div>
+        <div class="flex gap-2">
+          <button id="btn-apply-all-rules" title="Run rule matching on existing untagged transactions" class="bg-surface-container dark:bg-white/10 text-on-surface dark:text-white px-4 py-2.5 rounded-2xl font-bold text-xs flex items-center gap-1.5 shadow-xs active-scale hover:bg-surface-container-high">
+            <span class="material-symbols-outlined text-base">play_arrow</span>
+            Apply to All
+          </button>
+          <button id="btn-open-add-rule" class="bg-primary text-white px-5 py-2.5 rounded-2xl font-bold text-xs flex items-center gap-1.5 shadow-md active-scale">
+            <span class="material-symbols-outlined text-base">add</span>
+            Add Rule
+          </button>
+        </div>
+      </div>
+
+      <!-- Rules List (Laptop 3 columns grid) -->
+      <section id="rules-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Dynamically populated -->
+      </section>
+    </div>
+
+  </main>
+
+
+  <!-- Bottom Navigation Bar (Mobile only) -->
+  <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-surface-container-lowest dark:bg-[#1A1A2E] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] rounded-t-2xl border-t border-surface-container dark:border-white/10 md:hidden">
+    <button class="nav-tab active flex flex-col items-center justify-center text-primary dark:text-[#667EEA] px-3 py-1 active-scale" data-tab="dashboard">
+      <span class="material-symbols-outlined">home</span>
+      <span class="text-[10px] font-bold">Home</span>
+    </button>
+    <button class="nav-tab flex flex-col items-center justify-center text-on-surface-variant dark:text-gray-400 px-3 py-1 active-scale" data-tab="history">
+      <span class="material-symbols-outlined">history</span>
+      <span class="text-[10px] font-bold">History</span>
+    </button>
+    <button class="nav-tab flex flex-col items-center justify-center text-on-surface-variant dark:text-gray-400 px-3 py-1 active-scale" data-tab="tags">
+      <span class="material-symbols-outlined">label</span>
+      <span class="text-[10px] font-bold">Tags</span>
+    </button>
+    <button class="nav-tab flex flex-col items-center justify-center text-on-surface-variant dark:text-gray-400 px-3 py-1 active-scale" data-tab="rules">
+      <span class="material-symbols-outlined">rule</span>
+      <span class="text-[10px] font-bold">Rules</span>
+    </button>
+  </nav>
+
+  <!-- Contextual Floating Action Button (+) -->
+  <button id="fab-add-tx" title="Add Transaction" class="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 w-14 h-14 bg-primary text-white rounded-2xl shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-40">
+    <span class="material-symbols-outlined text-3xl">add</span>
+  </button>
+
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- Modal Backdrop -->
+  <div id="modal-backdrop" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-200 flex items-center justify-center p-4">
+    
+    <!-- 1. Add/Edit Transaction Modal -->
+    <div id="modal-transaction" class="bg-surface-container-lowest dark:bg-[#1A1A2E] text-on-surface dark:text-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-surface-container dark:border-white/10 hidden">
+      <div class="flex justify-between items-center mb-3">
+        <h3 id="modal-tx-title" class="font-bold text-lg">Add New Transaction</h3>
+        <button class="btn-close-modal p-1 text-on-surface-variant dark:text-gray-400 hover:bg-surface-container dark:hover:bg-white/10 rounded-full">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <!-- Mode Switcher Tabs (Manual Entry vs Import GPay PDF) -->
+      <div id="tx-modal-mode-tabs" class="flex gap-1 bg-surface-container-low dark:bg-[#16213E] p-1 rounded-2xl mb-4 border border-surface-container dark:border-white/10">
+        <button type="button" id="btn-mode-manual" class="flex-1 py-2 rounded-xl text-xs font-bold transition-all bg-primary text-white shadow-xs flex items-center justify-center gap-1.5">
+          <span class="material-symbols-outlined text-base">edit_note</span>
+          Manual Entry
+        </button>
+        <button type="button" id="btn-mode-pdf" class="flex-1 py-2 rounded-xl text-xs font-bold transition-all text-on-surface-variant dark:text-gray-400 hover:text-on-surface flex items-center justify-center gap-1.5">
+          <span class="material-symbols-outlined text-base">picture_as_pdf</span>
+          Import GPay PDF
+        </button>
+      </div>
+
+      <!-- Manual Entry Panel -->
+      <div id="tx-panel-manual">
+        <form id="form-transaction" class="space-y-4">
+          <input type="hidden" id="tx-edit-id" value="" />
+
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant dark:text-gray-300 mb-1">Amount (₹)</label>
+            <input type="number" step="0.01" id="tx-amount" placeholder="0.00" required class="w-full bg-surface-container-low dark:bg-[#16213E] text-on-surface dark:text-white px-4 py-2.5 rounded-xl border border-surface-container dark:border-white/10 text-base font-bold focus:outline-none focus:border-primary" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-on-surface-variant dark:text-gray-300 mb-1">Type</label>
+              <select id="tx-type" class="w-full bg-surface-container-low dark:bg-[#16213E] text-on-surface dark:text-white px-3 py-2.5 rounded-xl border border-surface-container dark:border-white/10 text-sm focus:outline-none focus:border-primary">
+                <option value="DEBIT">DEBIT (Expense)</option>
+                <option value="CREDIT">CREDIT (Income)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-on-surface-variant dark:text-gray-300 mb-1">Tag Category</label>
+              <select id="tx-tag" class="w-full bg-surface-container-low dark:bg-[#16213E] text-on-surface dark:text-white px-3 py-2.5 rounded-xl border border-surface-container dark:border-white/10 text-sm focus:outline-none focus:border-primary">
+                <option value="">(Untagged)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant dark:text-gray-300 mb-1">Merchant / Account Name</label>
+            <input type="text" id="tx-account" placeholder="e.g. Zomato, Uber, AT&T" required class="w-full bg-surface-container-low dark:bg-[#16213E] text-on-surface dark:text-white px-4 py-2.5 rounded-xl border border-surface-container dark:border-white/10 text-sm focus:outline-none focus:border-primary" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant dark:text-gray-300 mb-1">Notes / Description</label>
+            <input type="text" id="tx-notes" placeholder="Optional notes" class="w-full bg-surface-container-low dark:bg-[#16213E] text-on-surface dark:text-white px-4 py-2.5 rounded-xl border border-surface-container dark:border-white/10 text-sm focus:outline-none focus:border-primary" />
+          </div>
+
+          <div class="flex justify-end gap-3 pt-2">
+            <button type="button" class="btn-close-modal px-4 py-2 rounded-xl text-xs font-bold text-on-surface-variant dark:text-gray-300 hover:bg-surface-container dark:hover:bg-white/10">Cancel</button>
+            <button type="submit" class="bg-primary text-white px-5 py-2 rounded-xl text-xs font-bold shadow-md active-scale">Save Transaction</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Import GPay PDF Panel -->
+      <div id="tx-panel-pdf" class="hidden space-y-4">
+        <section id="pdf-dropzone" class="relative bg-gradient-to-br from-primary/5 via-surface-container-lowest to-primary/10 dark:from-[#16213E] dark:via-[#1A1A2E] dark:to-[#16213E] border-2 border-dashed border-primary/30 dark:border-primary/40 rounded-2xl p-6 text-center transition-all hover:border-primary cursor-pointer group shadow-xs">
+          <input type="file" id="pdf-file-input" accept=".pdf" class="hidden" />
+          
+          <div class="flex flex-col items-center justify-center space-y-3 pointer-events-none">
+            <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary dark:text-[#667EEA] flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
+              <span class="material-symbols-outlined text-2xl">upload_file</span>
+            </div>
+            <div>
+              <h4 class="font-extrabold text-sm text-on-surface dark:text-white">Drop GPay Statement PDF</h4>
+              <p class="text-[11px] text-on-surface-variant dark:text-gray-400 mt-0.5">
+                Automatically extracts, tags & skips duplicates
+              </p>
+            </div>
+            
+            <div class="pt-1 pointer-events-auto">
+              <button type="button" onclick="document.getElementById('pdf-file-input').click()" class="bg-primary text-white font-bold text-xs px-4 py-2 rounded-full shadow-md hover:bg-primary-container active-scale transition-all flex items-center gap-1.5 mx-auto">
+                <span class="material-symbols-outlined text-base">file_open</span>
+                Choose PDF File
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant dark:text-gray-300 mb-1">PDF Password (if protected)</label>
+          <input type="password" id="pdf-password-input" placeholder="e.g. phone number or DOB" class="w-full bg-surface-container-low dark:bg-[#16213E] text-on-surface dark:text-white px-4 py-2 rounded-xl border border-surface-container dark:border-white/10 text-xs focus:outline-none focus:border-primary" />
+        </div>
+
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" class="btn-close-modal px-4 py-2 rounded-xl text-xs font-bold text-on-surface-variant dark:text-gray-300 hover:bg-surface-container dark:hover:bg-white/10">Cancel</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 2. Add/Edit Tag Modal -->
+    <div id="modal-tag" class="bg-surface-container-lowest dark:bg-[#1A1A2E] text-on-surface dark:text-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-surface-container dark:border-white/10 hidden">
+      <div class="flex justify-between items-center mb-4">
+        <h3 id="modal-tag-title" class="font-bold text-lg">Add New Tag</h3>
+        <button class="btn-close-modal p-1 text-on-surface-variant dark:text-gray-400 hover:bg-surface-container dark:hover:bg-white/10 rounded-full">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <form id="form-tag" class="space-y-4">
+        <input type="hidden" id="tag-edit-id" value="" />
+
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant dark:text-gray-300 mb-1">Tag Name</label>
+          <input type="text" id="tag-name" placeholder="e.g. Travel, Groceries" required class="w-full bg-surface-container-low dark:bg-[#16213E] text-on-surface dark:text-white px-4 py-2.5 rounded-xl border border-surface-container dark:border-white/10 text-sm focus:outline-none focus:border-primary" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant dark:text-gray-300 mb-1">Emoji Icon</label>
+            <input type="text" id="tag-emoji" placeholder="🍔, 🚗, ✈️" class="w-full bg-surface-container-low dark:bg-[#16213E] text-on-surface dark:text-white px-4 py-2 rounded-xl border border-surface-container dark:border-white/10 text-base focus:outline-none focus:border-primary" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant dark:text-gray-300 mb-1">Color Hex</label>
+            <div class="flex items-center gap-2">
+              <input type="color" id="tag-color-picker" value="#667EEA" class="w-10 h-10 rounded-xl cursor-pointer bg-transparent border-0" />
+              <input type="text" id="tag-color" value="#667EEA" required class="w-full bg-surface-container-low dark:bg-[#16213E] text-on-surface dark:text-white px-3 py-2 rounded-xl border border-surface-container dark:border-white/10 text-xs font-mono uppercase focus:outline-none focus:border-primary" />
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" class="btn-close-modal px-4 py-2 rounded-xl text-xs font-bold text-on-surface-variant dark:text-gray-300 hover:bg-surface-container dark:hover:bg-white/10">Cancel</button>
+          <button type="submit" class="bg-primary text-white px-5 py-2 rounded-xl text-xs font-bold shadow-md active-scale">Save Tag</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- 3. Add Rule Modal -->
+    <div id="modal-rule" class="bg-surface-container-lowest dark:bg-[#1A1A2E] text-on-surface dark:text-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-surface-container dark:border-white/10 hidden">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-lg">Add Auto-Tag Rule</h3>
+        <button class="btn-close-modal p-1 text-on-surface-variant dark:text-gray-400 hover:bg-surface-container dark:hover:bg-white/10 rounded-full">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <form id="form-rule" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant dark:text-gray-300 mb-1">Merchant Keyword</label>
+          <input type="text" id="rule-keyword" placeholder="e.g. ZOMATO, UBER, AT&T" required class="w-full bg-surface-container-low dark:bg-[#16213E] text-on-surface dark:text-white px-4 py-2.5 rounded-xl border border-surface-container dark:border-white/10 text-sm font-mono uppercase focus:outline-none focus:border-primary" />
+          <p class="text-[11px] text-on-surface-variant dark:text-gray-400 mt-1">If a transaction contains this keyword, it will automatically get tagged.</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant dark:text-gray-300 mb-1">Rule Action</label>
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-surface-container dark:border-white/10 bg-surface-container-low dark:bg-[#16213E] cursor-pointer hover:border-primary">
+              <input type="radio" name="rule-type-radio" value="TAG" checked id="rule-type-tag" class="accent-primary">
+              <span class="text-xs font-semibold">🏷️ Auto-Tag</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-surface-container dark:border-white/10 bg-surface-container-low dark:bg-[#16213E] cursor-pointer hover:border-primary">
+              <input type="radio" name="rule-type-radio" value="IGNORE" id="rule-type-ignore" class="accent-error">
+              <span class="text-xs font-semibold text-error dark:text-red-400">🚫 Ignore Vendor</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="rule-tag-container">
+          <label class="block text-xs font-semibold text-on-surface-variant dark:text-gray-300 mb-1">Assign Tag</label>
+          <select id="rule-tag" class="w-full bg-surface-container-low dark:bg-[#16213E] text-on-surface dark:text-white px-3 py-2.5 rounded-xl border border-surface-container dark:border-white/10 text-sm focus:outline-none focus:border-primary">
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" class="btn-close-modal px-4 py-2 rounded-xl text-xs font-bold text-on-surface-variant dark:text-gray-300 hover:bg-surface-container dark:hover:bg-white/10">Cancel</button>
+          <button type="submit" class="bg-primary text-white px-5 py-2 rounded-xl text-xs font-bold shadow-md active-scale">Create & Apply Rule</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- 4. PDF Statement Preview Modal -->
+    <div id="modal-pdf-preview" class="bg-surface-container-lowest dark:bg-[#1A1A2E] text-on-surface dark:text-white w-full max-w-3xl rounded-3xl p-6 shadow-2xl border border-surface-container dark:border-white/10 hidden max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center pb-4 border-b border-surface-container dark:border-white/10">
+        <div>
+          <h3 class="font-extrabold text-lg flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary dark:text-[#667EEA]">picture_as_pdf</span>
+            Parsed Statement Preview
+          </h3>
+          <p class="text-xs text-on-surface-variant dark:text-gray-400 mt-0.5">Review extracted transactions before adding them to your tracker</p>
+        </div>
+        <button class="btn-close-modal p-1 text-on-surface-variant dark:text-gray-400 hover:bg-surface-container dark:hover:bg-white/10 rounded-full">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <!-- Parse Summary Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 my-4 bg-surface-container-low dark:bg-[#16213E] p-3.5 rounded-2xl border border-surface-container dark:border-white/10">
+        <div class="flex items-center gap-3 text-xs font-semibold">
+          <span class="px-2.5 py-1 rounded-full bg-primary/10 text-primary dark:text-[#667EEA]" id="pdf-stat-total">Total: 0</span>
+          <span class="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" id="pdf-stat-new">New: 0</span>
+          <span class="px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400" id="pdf-stat-dup">Duplicates: 0</span>
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <button id="pdf-btn-toggle-all" class="text-xs font-bold text-primary dark:text-[#667EEA] hover:underline">Toggle Select All</button>
+        </div>
+      </div>
+
+      <!-- Scrollable Preview Table / List -->
+      <div id="pdf-preview-list" class="overflow-y-auto flex-1 space-y-2.5 pr-1 max-h-[45vh]">
+        <!-- Dynamically populated -->
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex justify-between items-center pt-4 mt-2 border-t border-surface-container dark:border-white/10">
+        <span id="pdf-selected-count" class="text-xs font-bold text-on-surface-variant dark:text-gray-400">0 transactions selected</span>
+        <div class="flex gap-3">
+          <button type="button" class="btn-close-modal px-4 py-2 rounded-xl text-xs font-bold text-on-surface-variant dark:text-gray-300 hover:bg-surface-container dark:hover:bg-white/10">Cancel</button>
+          <button id="pdf-btn-confirm-import" class="bg-primary text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-md active-scale flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-base">file_upload</span>
+            Import Selected
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
