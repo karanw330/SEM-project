@@ -304,7 +304,7 @@ function renderDonutChart(tagTotals, totalExpenditure) {
 
   const centerLabel = document.getElementById('center-label');
   const centerValue = document.getElementById('center-value');
-  const defaultLabel = "Total Budget";
+  const defaultLabel = "Total Expenditure";
   const defaultValue = formatCurrency(totalExpenditure);
 
   if (centerLabel) centerLabel.textContent = defaultLabel;
