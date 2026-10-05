@@ -101,7 +101,7 @@ def test_wb_l04_donut_segments_one_per_category(app, api, n_categories):
     app.js("arguments[0].dispatchEvent(new Event('mouseenter'));", segments[0])
     assert app.text("#center-label").endswith("Cat%d" % (n_categories - 1))
     app.js("arguments[0].dispatchEvent(new Event('mouseleave'));", segments[0])
-    assert app.text("#center-label") == "Total Budget"
+    assert app.text("#center-label") == "Total Expenditure"
 
 
 def test_wb_l05_tag_card_counts_and_pluralisation(app, api):
