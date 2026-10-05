@@ -56,3 +56,7 @@ sample pdf/
 # Logs
 *.log
 logs/
+
+# Selenium white-box test reports
+tests/reports/
+.pytest_cache/

@@ -1,0 +1,4 @@
+-r requirements.txt
+selenium>=4.15
+pytest>=7.4
+coverage>=7.3
