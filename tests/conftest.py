@@ -127,7 +127,10 @@ def base_url():
     yield url
 
     # SIGINT lets uvicorn shut down cleanly so coverage.py writes its data file
-    proc.send_signal(signal.SIGINT)
+    if sys.platform == "win32":
+        proc.terminate()
+    else:
+        proc.send_signal(signal.SIGINT)
     try:
         proc.wait(timeout=15)
     except subprocess.TimeoutExpired:
