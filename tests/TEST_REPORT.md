@@ -58,9 +58,9 @@ and branches ran.
 |---|---|---|---|
 | Statement coverage | `test_wb_01_statement_coverage.py` | 5 | Empty dashboard, add expense / tag / rule through the forms |
 | Branch coverage | `test_wb_02_branch_coverage.py` | 14 | Untagged banner hidden / "1 expense" / "2 expenses"; confirm dialog OK vs Cancel; 404 branches |
-| Condition coverage (MC/DC) | `test_wb_03_condition_coverage.py` | 11 | Search `name OR notes OR tag`; import duplicate check `amount AND type AND account AND time` |
+| Condition coverage (MC/DC) | `test_wb_03_condition_coverage.py` | 12 | Search `name OR notes OR tag`; import duplicate check `amount AND type AND account AND time` |
 | Path coverage | `test_wb_04_path_coverage.py` | 7 | Full GPay PDF import → preview → confirm, then the duplicate path; rule lifecycle |
-| Loop testing | `test_wb_05_loop_testing.py` | 14 | Recent list with 0 / 1 / 4 / 5 / 6 items (limit 5); 7-day trend loop; early `break` in rule loop |
+| Loop testing | `test_wb_05_loop_testing.py` | 13 | Recent list with 0 / 1 / 4 / 5 / 6 items (limit 5); 7-day trend loop; early `break` in rule loop |
 
 **Cyclomatic complexity** (manual control-flow analysis, details in the test plan):
 
