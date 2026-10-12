@@ -262,7 +262,24 @@ class App:
         # loadAllData() has finished once the dashboard stats are in `state`
         self.wait.until(lambda d: d.execute_script(
             "return typeof state !== 'undefined' && state.dashboardStats !== null"))
+        # Count in-flight loadAllData() calls so tests can wait until the UI has
+        # finished re-rendering (see idle()).
+        self.d.execute_script("""
+            if (!window.__fcWrapped) {
+              window.__fcPending = 0;
+              const original = window.loadAllData;
+              window.loadAllData = async function () {
+                window.__fcPending++;
+                try { return await original.apply(this, arguments); }
+                finally { window.__fcPending--; }
+              };
+              window.__fcWrapped = true;
+            }""")
         return self
+
+    def idle(self):
+        """Wait until no loadAllData() refresh is running."""
+        self.wait.until(lambda d: d.execute_script("return (window.__fcPending || 0) === 0;"))
 
     def reload_data(self):
         """Re-run the app's own loadAllData() and wait for it to resolve."""
@@ -331,14 +348,17 @@ class App:
         self.click("#%s button[type=submit]" % form_id)
 
     # --- toasts & dialogs ---
+    # Toasts are replaced whenever a new one is shown, so read text + style in a
+    # single JS call; holding a WebElement here can raise StaleElementReferenceException.
+    _TOAST_JS = ("const t=document.getElementById('app-toast');"
+                 "return t ? [t.textContent.trim(), t.classList.contains('bg-rose-600')] : null;")
+
     def toast(self):
-        el = self.wait.until(EC.presence_of_element_located((By.ID, "app-toast")))
-        return el.get_attribute("textContent").strip(), "bg-rose-600" in el.get_attribute("class")
+        return tuple(self.wait.until(lambda d: d.execute_script(self._TOAST_JS)))
 
     def wait_toast(self, contains):
-        self.wait.until(lambda d: contains in (d.execute_script(
-            "const t=document.getElementById('app-toast'); return t ? t.textContent : '';") or ""))
-        return self.toast()
+        return tuple(self.wait.until(lambda d: (lambda t: t if t and contains in t[0] else None)(
+            d.execute_script(self._TOAST_JS))))
 
     def answer_confirm(self, accept=True):
         alert = self.wait.until(EC.alert_is_present())
@@ -367,6 +387,7 @@ class App:
         before = self.state("transactions.length")
         self.submit("form-transaction")
         self.until(lambda: self.state("transactions.length") != before, "transaction not saved")
+        self.idle()
 
     def add_tag_ui(self, name, color="#22AA55", emoji=None):
         self.switch_tab("tags")
