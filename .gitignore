@@ -60,3 +60,5 @@ logs/
 # Selenium white-box test reports
 tests/reports/
 .pytest_cache/
+.coverage
+.coverage.*
