@@ -73,3 +73,37 @@ python main.py
 ```
 
 The FastAPI backend will launch on `http://127.0.0.1:8000` and automatically serve the web application frontend at `http://127.0.0.1:8000`.
+
+---
+
+## 🧪 White-Box Testing (Selenium + Python)
+
+The `tests/` folder holds an automated white-box test suite (Assignment 7). Selenium drives the real app in Chrome along code paths chosen from the source code: statement, branch, condition (MC/DC), path and loop coverage. Meanwhile the backend runs under **coverage.py** to measure which statements and branches were executed.
+
+```bash
+pip install -r requirements-test.txt
+pytest                         # runs headless Chrome; prints the backend coverage table at the end
+HEADLESS=0 pytest -k p02       # watch a single test in a visible browser
+```
+
+- The tests start their own server on a free port with a **temporary database**, so your `expense_tracker.db` is never touched.
+- HTML coverage report: `tests/reports/coverage_html/index.html`
+- Test design (control-flow graphs, cyclomatic complexity, test-case table, defects found): [`tests/WHITE_BOX_TEST_PLAN.md`](tests/WHITE_BOX_TEST_PLAN.md)
+
+| Test file | Technique |
+|---|---|
+| `test_wb_01_statement_coverage.py` | Statement coverage |
+| `test_wb_02_branch_coverage.py` | Branch / decision coverage |
+| `test_wb_03_condition_coverage.py` | Condition coverage + MC/DC |
+| `test_wb_04_path_coverage.py` | Basis-path coverage |
+| `test_wb_05_loop_testing.py` | Loop testing (0, 1, n-1, n, n+1) |
+
+### Code-level white-box tests (no browser)
+
+`tests/whitebox/` has 96 pytest tests that call the backend functions and API routes directly. They take about 2 seconds and reach **98% statement + branch coverage**. Report: [`tests/WHITE_BOX_UNIT_REPORT.md`](tests/WHITE_BOX_UNIT_REPORT.md).
+
+```bash
+pytest tests/whitebox --cov=backend --cov-branch --cov-report=term-missing
+```
+
+Optional environment variables: `CHROME_BINARY` (custom Chrome path), `CHROMEDRIVER_PATH` (custom driver; otherwise Selenium Manager finds one), `HEADLESS=0`, `NO_COVERAGE=1`.

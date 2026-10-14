@@ -3,7 +3,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "expense_tracker.db")
+# FC_DB_PATH lets the test suite point the app at a throwaway database
+DB_PATH = os.environ.get("FC_DB_PATH") or os.path.join(os.path.dirname(__file__), "expense_tracker.db")
 SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_PATH}"
 
 engine = create_engine(
